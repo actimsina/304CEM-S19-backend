@@ -1,0 +1,56 @@
+const express = require('express');
+const Task = require('../models/tasks');
+const router = express.Router();
+
+router.route('/')
+    .get((req, res, next) => {
+        Task.find()
+            .then((tasks) => {
+                res.json(tasks);
+            }).catch((err) => next(err));
+    })
+    .post((req, res, next) => {
+        Task.create(req.body)
+            .then((task) => {
+                res.json(task);
+            }).catch(next);
+    })
+    .delete((req, res, next) => {
+        Task.deleteMany({})
+            .then((status) => {
+                res.json(status);
+            }).catch(next);
+    });
+
+router.route('/:id')
+    .get((req, res, next) => {
+        Task.findById(req.params.id)
+            .populate('category', 'name')
+            .then((task) => {
+                res.json(task);
+            }).catch(next);
+    })
+    .put((req, res, next) => {
+        Task.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+            .then((task) => {
+                res.json(task);
+            }).catch(next);
+    })
+    .delete((req, res, next) => {
+        Task.findByIdAndDelete(req.params.id)
+            .then((task) => {
+                res.json(task);
+            }).catch(next);
+    });
+// HW for this thursday
+router.route('/:id/notes')
+    .get()
+    .post()
+    .delete();
+
+router.route('/:id/notes/:noteId')
+    .get()
+    .put()
+    .delete();
+
+module.exports = router;
