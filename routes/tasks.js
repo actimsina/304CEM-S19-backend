@@ -91,6 +91,15 @@ router.route('/:id/notes/:noteId')
             }).catch(next);
     })
     // HW for tomorrow
-    .delete();
+    .delete((req, res, next) => {
+        Task.findById(req.params.id)
+            .then((task) => {
+                task.notes.pull(req.params.noteId);
+                task.save()
+                    .then((task) => {
+                        res.json(task);
+                    })
+            }).catch(next);
+    });
 
 module.exports = router;
