@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const taskRouter = require('./routes/tasks');
 const categoryRouter = require('./routes/categories');
+const auth = require('./routes/auth');
 
 mongoose.connect('mongodb://127.0.0.1/demotm', { useNewUrlParser: true, useUnifiedTopology: true })
     .then((db) => {
@@ -9,6 +10,9 @@ mongoose.connect('mongodb://127.0.0.1/demotm', { useNewUrlParser: true, useUnifi
     });
 const app = express();
 app.use(express.json());
+
+app.use(auth);
+
 app.use('/tasks', taskRouter);
 app.use('/categories', categoryRouter);
 
