@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Category = require('../models/categories');
+const auth = require('../routes/auth');
 
 router.route('/')
     .get((req, res, next) => {
@@ -9,7 +10,7 @@ router.route('/')
                 res.json(categories);
             }).catch(next);
     })
-    .post((req, res, next) => {
+    .post(auth, (req, res, next) => {
         Category.create(req.body)
             .then((category) => {
                 res.json(category);

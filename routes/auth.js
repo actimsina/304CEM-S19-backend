@@ -9,7 +9,7 @@ function authMy(req, res, next) {
     let authInfo = new Buffer.from(authHeader.split(" ")[1], "base64").toString()
         .split(':');
     console.log(authInfo);
-
+    // HW for Friday 13 Dec.
     if (authInfo[0] === 'admin' && authInfo[1] === 'admin') {
         next();
     } else {
