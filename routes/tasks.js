@@ -4,19 +4,20 @@ const router = express.Router();
 
 router.route('/')
     .get((req, res, next) => {
-        Task.find()
+        Task.find({ author: req.user._id })
             .then((tasks) => {
                 res.json(tasks);
             }).catch((err) => next(err));
     })
     .post((req, res, next) => {
+        req.body.author = req.user._id;
         Task.create(req.body)
             .then((task) => {
                 res.json(task);
             }).catch(next);
     })
     .delete((req, res, next) => {
-        Task.deleteMany({})
+        Task.deleteMany({ author: req.user._id })
             .then((status) => {
                 res.json(status);
             }).catch(next);
