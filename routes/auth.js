@@ -1,4 +1,5 @@
 const User = require('../models/users');
+const bcrypt = require('bcryptjs');
 function authMy(req, res, next) {
     let authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -18,13 +19,17 @@ function authMy(req, res, next) {
                 err.status = 401;
                 return next(err);
             }
-            if (user.password !== authInfo[1]) {
-                let err = new Error('Password does not match!');
-                err.status = 401;
-                return next(err);
-            }
-            req.user = user;
-            next();
+
+            bcrypt.compare(authInfo[1], user.password, function (err, success) {
+                if (!success) {
+                    let err = new Error('Password does not match!');
+                    err.status = 401;
+                    return next(err);
+                }
+                req.user = user;
+                next();
+            })
+
         }).catch(next);
 }
 module.exports = authMy;
