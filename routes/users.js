@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/users');
+const auth = require('../routes/auth');
 
 router.post('/signup', (req, res, next) => {
     User.findOne({ username: req.body.username })
@@ -19,7 +20,9 @@ router.post('/signup', (req, res, next) => {
                 }
                 User.create({
                     username: req.body.username,
-                    password: hash
+                    password: hash,
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName
                 }).then((user) => {
                     let token = jwt.sign({ userId: user._id }, process.env.SECRET);
                     res.json({ status: "Signup Success!", token: token });
@@ -47,5 +50,15 @@ router.post('/login', (req, res, next) => {
             });
         }).catch(next);
 });
+
+router.get('/me', auth, (req, res, next) => {
+    res.json({ username: req.user.username, firstName: req.user.firstName, lastName: req.user.lastName });
+});
+router.put('/me', auth, (req, res, next) => {
+    User.findByIdAndUpdate(req.user._id, { $set: req.body }, { new: true })
+        .then((user) => {
+            res.json({ username: user.username, firstName: user.firstName, lastName: user.lastName });
+        })
+})
 
 module.exports = router;

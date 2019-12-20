@@ -1,35 +1,23 @@
 const User = require('../models/users');
-const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 function authMy(req, res, next) {
     let authHeader = req.headers.authorization;
     if (!authHeader) {
         let err = new Error('No authentication information');
-        res.setHeader('WWW-Authenticate', 'Basic');
         err.status = 401;
         return next(err);
     }
-    let authInfo = new Buffer.from(authHeader.split(" ")[1], "base64").toString()
-        .split(':');
-    // console.log(authInfo);
-    // HW for Friday 13 Dec.
-    User.findOne({ username: authInfo[0] })
+    let token = authHeader.split(" ")[1];
+    let data;
+    try {
+        data = jwt.verify(token, process.env.SECRET)
+    } catch (err) {
+        return next(err);
+    }
+    User.findById(data.userId)
         .then((user) => {
-            if (user === null) {
-                let err = new Error('Username does not exists!');
-                err.status = 401;
-                return next(err);
-            }
-
-            bcrypt.compare(authInfo[1], user.password, function (err, success) {
-                if (!success) {
-                    let err = new Error('Password does not match!');
-                    err.status = 401;
-                    return next(err);
-                }
-                req.user = user;
-                next();
-            })
-
+            req.user = user;
+            next();
         }).catch(next);
 }
 module.exports = authMy;
