@@ -10,7 +10,7 @@ router.route('/')
                 res.json(categories);
             }).catch(next);
     })
-    .post(auth, (req, res, next) => {
+    .post(auth.verifyUser, (req, res, next) => {
         Category.create(req.body)
             .then((category) => {
                 res.json(category);

@@ -1,0 +1,1 @@
+db.users.insert({username: "admin", password: "admin", admin: true, firstName: "Admin", lastName:"Admin"});

@@ -51,14 +51,31 @@ router.post('/login', (req, res, next) => {
         }).catch(next);
 });
 
-router.get('/me', auth, (req, res, next) => {
+router.get('/me', auth.verifyUser, (req, res, next) => {
     res.json({ username: req.user.username, firstName: req.user.firstName, lastName: req.user.lastName });
 });
-router.put('/me', auth, (req, res, next) => {
+router.put('/me', auth.verifyUser, (req, res, next) => {
     User.findByIdAndUpdate(req.user._id, { $set: req.body }, { new: true })
         .then((user) => {
             res.json({ username: user.username, firstName: user.firstName, lastName: user.lastName });
         })
-})
-
+});
+router.delete('/me', auth.verifyUser, (req, res, next) => {
+    User.findByIdAndDelete(req.user._id)
+        .then((user) => {
+            res.json({ status: 'User deleted!', user: user })
+        }).catch(next);
+});
+router.delete('/:userId', auth.verifyUser, auth.verifyAdmin, (req, res, next) => {
+    User.findByIdAndDelete(req.params.userId)
+        .then((user) => {
+            res.json({ status: 'User deleted!', user: user });
+        }).catch(next);
+});
+router.get('/all', auth.verifyUser, auth.verifyAdmin, (req, res, next) => {
+    User.find()
+        .then((users) => {
+            res.json(users);
+        }).catch(next);
+});
 module.exports = router;

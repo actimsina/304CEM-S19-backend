@@ -1,6 +1,6 @@
 const User = require('../models/users');
 const jwt = require('jsonwebtoken');
-function authMy(req, res, next) {
+module.exports.verifyUser = (req, res, next) => {
     let authHeader = req.headers.authorization;
     if (!authHeader) {
         let err = new Error('No authentication information');
@@ -20,4 +20,15 @@ function authMy(req, res, next) {
             next();
         }).catch(next);
 }
-module.exports = authMy;
+module.exports.verifyAdmin = (req, res, next) => {
+    if (!req.user) {
+        let err = new Error('Unauthorized!');
+        err.status = 401;
+        return next(err);
+    } else if (req.user.admin !== true) {
+        let err = new Error('You are not admin!');
+        err.status = 403;
+        return next(err);
+    }
+    next();
+}
