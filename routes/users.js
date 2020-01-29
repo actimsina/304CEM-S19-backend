@@ -52,7 +52,8 @@ router.post('/login', (req, res, next) => {
 });
 
 router.get('/me', auth.verifyUser, (req, res, next) => {
-    res.json({ username: req.user.username, firstName: req.user.firstName, lastName: req.user.lastName });
+    // res.json({ username: req.user.username, firstName: req.user.firstName, lastName: req.user.lastName });
+    res.json(req.user);
 });
 router.put('/me', auth.verifyUser, (req, res, next) => {
     User.findByIdAndUpdate(req.user._id, { $set: req.body }, { new: true })
