@@ -5,6 +5,7 @@ const router = express.Router();
 router.route('/')
     .get((req, res, next) => {
         Task.find({ author: req.user._id })
+            .populate('category')
             .then((tasks) => {
                 res.json(tasks);
             }).catch((err) => next(err));
@@ -54,7 +55,8 @@ router.route('/:id/notes')
     .post((req, res, next) => {
         Task.findById(req.params.id)
             .then((task) => {
-                task.notes.push(req.body);
+                // task.notes.push(req.body);
+                task.notes.unshift(req.body);
                 task.save()
                     .then((task) => {
                         res.json(task);

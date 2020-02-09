@@ -37,6 +37,7 @@ router.route('/:id')
             }).catch(next);
     })
     .delete((req, res, next) => {
+
         Category.findByIdAndDelete(req.params.id)
             .then((category) => {
                 res.json(category);
